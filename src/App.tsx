@@ -183,7 +183,7 @@ export default function App() {
               onClick={() => (window.location.href = "/")}
             >
               <div className="relative">
-                <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-2xl group-hover:bg-indigo-500/40 transition-all duration-500" />
+                <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-2xl group-hover:bg-indigo-500/40" />
                 <img
                   src="src/images/icon.png"
                   alt="Swell Logo"
@@ -203,13 +203,13 @@ export default function App() {
             <nav className="hidden md:flex items-center gap-8">
               <a
                 href="https://minkkaeng.github.io/Swell-docs/"
-                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                className="text-sm font-medium text-neutral-400 hover:text-white"
               >
                 홈페이지
               </a>
               <a
                 href="mailto:nowul.dev@gmail.com"
-                className="px-5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-full text-sm font-semibold hover:bg-neutral-800 transition-all active:scale-95 shadow-lg shadow-black/20"
+                className="px-5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-full text-sm font-semibold hover:bg-neutral-800 active:scale-95 shadow-lg shadow-black/20"
               >
                 문의하기
               </a>
@@ -226,7 +226,7 @@ export default function App() {
             <button
               key={key}
               onClick={() => setActiveTerm(key)}
-              className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[11px] font-bold transition-all duration-300 border ${
+              className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[11px] font-bold border ${
                 activeTerm === key
                   ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/20"
                   : "bg-neutral-900 text-neutral-500 border-neutral-800 hover:text-neutral-300"
@@ -246,7 +246,7 @@ export default function App() {
                 <button
                   key={key}
                   onClick={() => setActiveTerm(key)}
-                  className={`group relative w-full text-left px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-500 flex items-center justify-between ${
+                  className={`group relative w-full text-left px-4 py-3.5 rounded-2xl text-sm font-semibold flex items-center justify-between ${
                     activeTerm === key
                       ? "bg-indigo-500/5 text-indigo-400"
                       : "text-neutral-500 hover:bg-neutral-900/50 hover:text-neutral-300"
@@ -271,7 +271,7 @@ export default function App() {
               </p>
               <button
                 onClick={() => window.print()}
-                className="w-full py-3 rounded-xl bg-neutral-800 text-white text-xs font-bold border border-neutral-700 hover:bg-neutral-700 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 rounded-xl bg-neutral-800 text-white text-xs font-bold border border-neutral-700 hover:bg-neutral-700 flex items-center justify-center gap-2"
               >
                 📥 PDF로 출력하기
               </button>
@@ -306,10 +306,10 @@ export default function App() {
                 return (
                   <section key={index} className="group">
                     <div className="flex items-baseline gap-3 sm:gap-4 mb-4 sm:mb-6">
-                      <span className="text-indigo-500/50 font-mono text-xs sm:text-sm group-hover:text-indigo-500 transition-colors">
+                      <span className="text-indigo-500/50 font-mono text-xs sm:text-sm group-hover:text-indigo-500">
                         {(index + 1).toString().padStart(2, "0")}
                       </span>
-                      <h3 className="text-lg sm:text-2xl font-bold text-neutral-100 tracking-tight group-hover:text-white transition-colors">
+                      <h3 className="text-lg sm:text-2xl font-bold text-neutral-100 tracking-tight group-hover:text-white">
                         {heading}
                       </h3>
                     </div>
@@ -325,10 +325,17 @@ export default function App() {
                                 </strong>
                               );
                             }
-                            <span key={i} className="relative inline-block px-1 font-bold text-white group/highlight">
-                              <span className="relative z-10">{part.slice(2, -2)}</span>
-                              <span className="absolute inset-x-0 bottom-[10%] h-[35%] bg-indigo-500/40 -z-0 rounded-sm" />
-                            </span>;
+                            if (part.startsWith("!!") && part.endsWith("!!")) {
+                              return (
+                                <span
+                                  key={i}
+                                  className="relative inline-block px-1 font-bold text-white group/highlight"
+                                >
+                                  <span className="relative z-10">{part.slice(2, -2)}</span>
+                                  <span className="absolute inset-x-0 bottom-[10%] h-[35%] bg-indigo-500/40 -z-0 rounded-sm" />
+                                </span>
+                              );
+                            }
                             return part;
                           })}
                         </p>
@@ -340,10 +347,10 @@ export default function App() {
             </div>
 
             <div
-              className="mt-16 sm:mt-24 pt-10 sm:pt-12 border-t border-neutral-900 group cursor-pointer hover:border-neutral-800 transition-colors"
+              className="mt-16 sm:mt-24 pt-10 sm:pt-12 border-t border-neutral-900 group cursor-pointer hover:border-neutral-800"
               onClick={() => window.scrollTo(0, 0)}
             >
-              <p className="text-center text-neutral-500 text-xs sm:text-sm font-medium group-hover:text-neutral-400 transition-colors">
+              <p className="text-center text-neutral-500 text-xs sm:text-sm font-medium group-hover:text-neutral-400">
                 모든 내용을 확인하셨습니다. 맨 위로 가기 ↑
               </p>
             </div>
