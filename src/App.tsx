@@ -161,7 +161,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo(0, 0);
   }, [activeTerm]);
 
   const { title, lastUpdated, content } = termsData[activeTerm];
@@ -254,7 +254,7 @@ export default function App() {
                 >
                   <span className="relative z-10">{data.title}</span>
                   {activeTerm === key && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)] animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)]" />
                   )}
                   {/* Active Indicator Bar */}
                   {activeTerm === key && (
@@ -325,17 +325,10 @@ export default function App() {
                                 </strong>
                               );
                             }
-                            if (part.startsWith("!!") && part.endsWith("!!")) {
-                              return (
-                                <span
-                                  key={i}
-                                  className="relative inline-block px-1 font-bold text-white group/highlight"
-                                >
-                                  <span className="relative z-10">{part.slice(2, -2)}</span>
-                                  <span className="absolute inset-x-0 bottom-[10%] h-[35%] bg-indigo-500/40 -z-0 rounded-sm group-hover/highlight:h-[70%] transition-all duration-300" />
-                                </span>
-                              );
-                            }
+                            <span key={i} className="relative inline-block px-1 font-bold text-white group/highlight">
+                              <span className="relative z-10">{part.slice(2, -2)}</span>
+                              <span className="absolute inset-x-0 bottom-[10%] h-[35%] bg-indigo-500/40 -z-0 rounded-sm" />
+                            </span>;
                             return part;
                           })}
                         </p>
@@ -348,7 +341,7 @@ export default function App() {
 
             <div
               className="mt-16 sm:mt-24 pt-10 sm:pt-12 border-t border-neutral-900 group cursor-pointer hover:border-neutral-800 transition-colors"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              onClick={() => window.scrollTo(0, 0)}
             >
               <p className="text-center text-neutral-500 text-xs sm:text-sm font-medium group-hover:text-neutral-400 transition-colors">
                 모든 내용을 확인하셨습니다. 맨 위로 가기 ↑
@@ -360,19 +353,14 @@ export default function App() {
 
       {/* Floating Action Buttons */}
       <div
-        className={`fixed bottom-8 right-8 z-[200] flex flex-col gap-3 transition-all duration-500 ${showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"}`}
+        className={`fixed bottom-8 right-8 z-[200] flex flex-col gap-3 ${showScrollTop ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <button
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="p-3.5 sm:p-4 bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl hover:bg-white/20 transition-all active:scale-90 group"
+          onClick={() => window.scrollTo(0, 0)}
+          className="p-3.5 sm:p-4 bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl hover:bg-white/20 transition-all active:scale-95 group"
           aria-label="맨 위로"
         >
-          <svg
-            className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:-translate-y-1 transition-transform"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
           </svg>
         </button>
