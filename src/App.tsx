@@ -125,7 +125,6 @@ const termsData: Record<TermType, { title: string; lastUpdated: string; content:
 
 export default function App() {
   const [activeTerm, setActiveTerm] = useState<TermType>("service");
-  const [isAnimating, setIsAnimating] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   // 스크롤 위치 감지 (Top 버튼 노출용)
@@ -163,9 +162,6 @@ export default function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 400);
-    return () => clearTimeout(timer);
   }, [activeTerm]);
 
   const { title, lastUpdated, content } = termsData[activeTerm];
@@ -285,11 +281,7 @@ export default function App() {
 
         {/* Article Area */}
         <article className="flex-1 min-w-0">
-          <div
-            className={`transition-all duration-700 ease-out transform ${
-              isAnimating ? "opacity-0 translate-y-8 scale-[0.98]" : "opacity-100 translate-y-0 scale-100"
-            }`}
-          >
+          <div>
             <div className="mb-10 sm:mb-16">
               <div className="flex items-center gap-2 mb-4 sm:mb-6">
                 <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-indigo-500/10 text-indigo-400 text-[9px] sm:text-[10px] font-bold rounded-full border border-indigo-500/20 uppercase tracking-wider">
