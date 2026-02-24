@@ -126,129 +126,285 @@ const termsData: Record<TermType, { title: string; lastUpdated: string; content:
 export default function App() {
   const [activeTerm, setActiveTerm] = useState<TermType>("service");
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // 스크롤 위치 감지 (Top 버튼 노출용)
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // URL 해시(#)에 따른 초기 탭 설정 및 해시 변경 감지
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      const hashMapping: Record<string, TermType> = {
+        "#privacy": "privacy",
+        "#youth": "youth",
+        "#guidelines": "policy",
+        "#location": "location",
+        "#marketing": "marketing",
+        "#payment": "payment",
+        "#service": "service",
+      };
+
+      if (hash && hashMapping[hash]) {
+        setActiveTerm(hashMapping[hash]);
+      }
+    };
+
+    handleHashChange(); // 초기 로드 시 실행
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
 
   useEffect(() => {
-    window.scrollTo(0, 0); // 메뉴 변경 시 상단으로 스크롤 이동
+    window.scrollTo({ top: 0, behavior: "smooth" });
     setIsAnimating(true);
-    const timer = setTimeout(() => setIsAnimating(false), 500);
+    const timer = setTimeout(() => setIsAnimating(false), 400);
     return () => clearTimeout(timer);
   }, [activeTerm]);
 
   const { title, lastUpdated, content } = termsData[activeTerm];
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans selection:bg-indigo-500/40 selection:text-white">
+      {/* Background Decoration */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full" />
+        <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-purple-500/5 blur-[100px] rounded-full" />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-800/50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <img
-                src="src/images/icon.png"
-                alt="Swell Logo"
-                className="w-10 h-10 rounded-2xl shadow-lg shadow-indigo-500/20 object-cover"
-              />
-              <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 to-purple-200">
-                Swell
-              </span>
+      <header className="sticky top-0 z-[100] bg-neutral-950/70 backdrop-blur-2xl border-b border-neutral-800/40">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12">
+          <div className="flex items-center justify-between h-16 sm:h-20">
+            <div
+              className="flex items-center gap-3 sm:gap-4 group cursor-pointer"
+              onClick={() => (window.location.href = "/")}
+            >
+              <div className="relative">
+                <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-2xl group-hover:bg-indigo-500/40 transition-all duration-500" />
+                <img
+                  src="src/images/icon.png"
+                  alt="Swell Logo"
+                  className="relative w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl object-cover border border-neutral-800/50"
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl sm:text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-br from-white via-indigo-100 to-indigo-300">
+                  Swell
+                </span>
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-500 -mt-1 ml-0.5">
+                  Legal Center
+                </span>
+              </div>
             </div>
+
+            <nav className="hidden md:flex items-center gap-8">
+              <a
+                href="https://minkkaeng.github.io/Swell-docs/"
+                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+              >
+                홈페이지
+              </a>
+              <a
+                href="mailto:nowul.dev@gmail.com"
+                className="px-5 py-2.5 bg-neutral-900 border border-neutral-800 rounded-full text-sm font-semibold hover:bg-neutral-800 transition-all active:scale-95 shadow-lg shadow-black/20"
+              >
+                문의하기
+              </a>
+            </nav>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col sm:flex-row gap-12">
-        {/* Mobile Navigation */}
-        <aside className="sm:hidden flex overflow-x-auto pb-4 gap-2 scrollbar-none border-b border-neutral-800/50">
+      <main className="relative max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12 flex flex-col md:flex-row gap-8 lg:gap-16">
+        {/* Mobile Navigation - Sticky Bar Style */}
+        <nav className="md:hidden sticky top-16 z-[90] bg-neutral-950/90 backdrop-blur-lg -mx-4 px-4 py-3 border-b border-neutral-900 overflow-x-auto no-scrollbar flex gap-2">
           {(Object.entries(termsData) as [TermType, { title: string }][]).map(([key, data]) => (
             <button
               key={key}
               onClick={() => setActiveTerm(key)}
-              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap px-3.5 py-1.5 rounded-full text-[11px] font-bold transition-all duration-300 border ${
                 activeTerm === key
-                  ? "bg-neutral-800 text-indigo-400 border border-neutral-700"
-                  : "bg-neutral-900/30 text-neutral-400 border border-transparent hover:bg-neutral-800/50"
+                  ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-600/20"
+                  : "bg-neutral-900 text-neutral-500 border-neutral-800 hover:text-neutral-300"
               }`}
             >
               {data.title}
             </button>
           ))}
-        </aside>
+        </nav>
 
-        {/* Sidebar Navigation */}
-        <aside className="hidden sm:block w-64 shrink-0">
-          <div className="sticky top-28 space-y-1">
-            <h2 className="text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-4 px-3">약관 및 정책</h2>
-            {(Object.entries(termsData) as [TermType, { title: string }][]).map(([key, data]) => (
+        {/* Sidebar Navigation - Premium Side Rail */}
+        <aside className="hidden md:block w-72 shrink-0">
+          <div className="sticky top-32">
+            <h2 className="text-[11px] font-bold text-neutral-500 uppercase tracking-[0.15em] mb-6 px-4">내용 목차</h2>
+            <div className="space-y-1">
+              {(Object.entries(termsData) as [TermType, { title: string }][]).map(([key, data]) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTerm(key)}
+                  className={`group relative w-full text-left px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-500 flex items-center justify-between ${
+                    activeTerm === key
+                      ? "bg-indigo-500/5 text-indigo-400"
+                      : "text-neutral-500 hover:bg-neutral-900/50 hover:text-neutral-300"
+                  }`}
+                >
+                  <span className="relative z-10">{data.title}</span>
+                  {activeTerm === key && (
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.6)] animate-pulse" />
+                  )}
+                  {/* Active Indicator Bar */}
+                  {activeTerm === key && (
+                    <div className="absolute left-0 top-3 bottom-3 w-1 bg-indigo-500 rounded-full" />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Download Button Shadow Box */}
+            <div className="mt-12 p-6 rounded-3xl bg-neutral-900/40 border border-neutral-800/50 backdrop-blur-sm">
+              <p className="text-xs text-neutral-400 leading-relaxed mb-4">
+                Swell은 투명한 운영 정책을 준수하며, 사용자의 권리 보호를 최우선으로 합니다.
+              </p>
               <button
-                key={key}
-                onClick={() => setActiveTerm(key)}
-                className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
-                  activeTerm === key
-                    ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-                    : "text-neutral-400 border border-transparent hover:bg-neutral-800/50 hover:text-neutral-200"
-                }`}
+                onClick={() => window.print()}
+                className="w-full py-3 rounded-xl bg-neutral-800 text-white text-xs font-bold border border-neutral-700 hover:bg-neutral-700 transition-all flex items-center justify-center gap-2"
               >
-                {data.title}
+                📥 PDF로 출력하기
               </button>
-            ))}
+            </div>
           </div>
         </aside>
 
         {/* Article Area */}
-        <article className="flex-1 min-w-0 transition-opacity duration-500 pb-20 pt-2 lg:pt-0">
+        <article className="flex-1 min-w-0">
           <div
-            className={`transition-all duration-500 ease-out transform ${
-              isAnimating ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+            className={`transition-all duration-700 ease-out transform ${
+              isAnimating ? "opacity-0 translate-y-8 scale-[0.98]" : "opacity-100 translate-y-0 scale-100"
             }`}
           >
-            <div className="mb-12 border-b border-neutral-800/50 pb-8">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-neutral-100 mb-3">{title}</h1>
-              <p className="text-sm text-neutral-400 font-medium">
-                최종 수정일: <time dateTime={lastUpdated}>{lastUpdated}</time>
-              </p>
+            <div className="mb-10 sm:mb-16">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-indigo-500/10 text-indigo-400 text-[9px] sm:text-[10px] font-bold rounded-full border border-indigo-500/20 uppercase tracking-wider">
+                  Policy Update
+                </span>
+              </div>
+              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-4 sm:mb-6 leading-[1.2] sm:leading-[1.1]">
+                {title}
+              </h1>
+              <div className="flex items-center gap-3 sm:gap-4 text-neutral-500">
+                <span className="text-xs sm:text-sm font-medium">최종 업데이트</span>
+                <div className="w-3 sm:w-4 h-[1px] bg-neutral-800" />
+                <time className="text-xs sm:text-sm font-bold text-neutral-300" dateTime={lastUpdated}>
+                  {lastUpdated}
+                </time>
+              </div>
             </div>
 
-            <div className="space-y-12">
+            <div className="space-y-10 sm:space-y-16">
               {content.map((paragraph, index) => {
                 const [heading, ...body] = paragraph.split("\n");
                 return (
-                  <div key={index}>
-                    <h3 className="text-xl font-semibold text-neutral-200 mb-4">{heading}</h3>
-                    {body.map((line, lineIndex) => (
-                      <p key={lineIndex} className="text-neutral-400 mb-2 leading-loose text-[0.95rem]">
-                        {line.split(/(\*\*.*?\*\*|!!.*?!!)/g).map((part, i) => {
-                          if (part.startsWith("**") && part.endsWith("**")) {
-                            return (
-                              <strong key={i} className="text-neutral-200 font-bold">
-                                {part.slice(2, -2)}
-                              </strong>
-                            );
-                          }
-                          if (part.startsWith("!!") && part.endsWith("!!")) {
-                            return (
-                              <span key={i} className="text-neutral-50 font-bold bg-neutral-800/50 px-1 rounded">
-                                {part.slice(2, -2)}
-                              </span>
-                            );
-                          }
-                          return part;
-                        })}
-                      </p>
-                    ))}
-                  </div>
+                  <section key={index} className="group">
+                    <div className="flex items-baseline gap-3 sm:gap-4 mb-4 sm:mb-6">
+                      <span className="text-indigo-500/50 font-mono text-xs sm:text-sm group-hover:text-indigo-500 transition-colors">
+                        {(index + 1).toString().padStart(2, "0")}
+                      </span>
+                      <h3 className="text-lg sm:text-2xl font-bold text-neutral-100 tracking-tight group-hover:text-white transition-colors">
+                        {heading}
+                      </h3>
+                    </div>
+
+                    <div className="pl-7 sm:pl-9 space-y-3 sm:space-y-4">
+                      {body.map((line, lineIndex) => (
+                        <p key={lineIndex} className="text-neutral-400 leading-relaxed text-[0.9rem] sm:text-base">
+                          {line.split(/(\*\*.*?\*\*|!!.*?!!)/g).map((part, i) => {
+                            if (part.startsWith("**") && part.endsWith("**")) {
+                              return (
+                                <strong key={i} className="text-neutral-100 font-bold bg-neutral-800/30 px-1 rounded">
+                                  {part.slice(2, -2)}
+                                </strong>
+                              );
+                            }
+                            if (part.startsWith("!!") && part.endsWith("!!")) {
+                              return (
+                                <span
+                                  key={i}
+                                  className="relative inline-block px-1 font-bold text-white group/highlight"
+                                >
+                                  <span className="relative z-10">{part.slice(2, -2)}</span>
+                                  <span className="absolute inset-x-0 bottom-[10%] h-[35%] bg-indigo-500/40 -z-0 rounded-sm group-hover/highlight:h-[70%] transition-all duration-300" />
+                                </span>
+                              );
+                            }
+                            return part;
+                          })}
+                        </p>
+                      ))}
+                    </div>
+                  </section>
                 );
               })}
+            </div>
+
+            <div
+              className="mt-16 sm:mt-24 pt-10 sm:pt-12 border-t border-neutral-900 group cursor-pointer hover:border-neutral-800 transition-colors"
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            >
+              <p className="text-center text-neutral-500 text-xs sm:text-sm font-medium group-hover:text-neutral-400 transition-colors">
+                모든 내용을 확인하셨습니다. 맨 위로 가기 ↑
+              </p>
             </div>
           </div>
         </article>
       </main>
 
-      <footer className="border-t border-neutral-900 mt-auto bg-neutral-950">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <p className="text-center text-sm text-neutral-600">&copy; 2026 Swell Co., Ltd. All rights reserved.</p>
+      {/* Floating Action Buttons */}
+      <div
+        className={`fixed bottom-8 right-8 z-[200] flex flex-col gap-3 transition-all duration-500 ${showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"}`}
+      >
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="p-3.5 sm:p-4 bg-white/10 backdrop-blur-xl border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl hover:bg-white/20 transition-all active:scale-90 group"
+          aria-label="맨 위로"
+        >
+          <svg
+            className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:-translate-y-1 transition-transform"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
+      </div>
+
+      <footer className="relative border-t border-neutral-900 bg-neutral-950 pt-16 sm:pt-20 pb-10 sm:pb-12 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 flex flex-col items-center">
+          <div className="flex items-center gap-2 opacity-30 grayscale mb-6 sm:mb-8">
+            <img src="src/images/icon.png" alt="Swell Logo" className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg grayscale" />
+            <span className="font-bold tracking-tighter text-sm sm:text-base">Swell</span>
+          </div>
+          <p className="text-center text-[10px] sm:text-xs text-neutral-600 font-medium tracking-wide">
+            &copy; 2026 Swell Co., Ltd. All rights reserved.
+          </p>
+          <p className="text-center text-[9px] sm:text-[10px] text-neutral-800 mt-2">
+            All contents are optimized for the latest mobile and desktop browsers.
+          </p>
         </div>
       </footer>
+
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </div>
   );
 }
